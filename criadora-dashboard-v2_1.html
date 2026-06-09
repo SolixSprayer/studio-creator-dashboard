@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio — Criadora de Conteúdo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+  /* ===== TOKENS ===== */
+  [data-theme="dark"] {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #c84b8f;
+    --accent2: #7c3aed;
+    --accent-glow: rgba(200,75,143,0.15);
+    --text: #f0eef8;
+    --text-muted: #8880a8;
+    --text-dim: #504e68;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --gradient: linear-gradient(135deg, #c84b8f, #7c3aed);
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --theme-icon: "☀️";
+  }
+
+  [data-theme="light"] {
+    --bg: #f5f4fb;
+    --surface: #ffffff;
+    --surface2: #f0eef8;
+    --border: #ddd9f0;
+    --accent: #c84b8f;
+    --accent2: #7c3aed;
+    --accent-glow: rgba(200,75,143,0.08);
+    --text: #1a1730;
+    --text-muted: #6b6490;
+    --text-dim: #aaa6c3;
+    --success: #16a34a;
+    --warning: #d97706;
+    --gradient: linear-gradient(135deg, #c84b8f, #7c3aed);
+    --shadow: 0 4px 24px rgba(100,80,180,0.08);
+    --theme-icon: "🌙";
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+
+  .logo-mark {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
+    background: var(--gradient); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px;
+  }
+
+  .logo-sub { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-top: 3px; }
+
+  .nav { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+  .nav-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); padding: 10px 12px 6px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13.5px; color: var(--text-muted);
+    transition: all 0.15s; border: none; background: none;
+    width: 100%; text-align: left; font-family: 'Inter', sans-serif;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 500; }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto; background: var(--accent); color: white;
+    font-size: 10px; font-weight: 600; padding: 1px 6px;
+    border-radius: 10px; min-width: 18px; text-align: center;
+  }
+
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+
+  .theme-toggle {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; color: var(--text-muted);
+    border: 1px solid var(--border); background: var(--surface2);
+    width: 100%; font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+  .theme-toggle:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ===== MAIN ===== */
+  .main { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    padding: 20px 36px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+    transition: background 0.2s;
+  }
+
+  .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .page-title span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 8px; font-size: 13px;
+    font-weight: 500; cursor: pointer; border: none;
+    transition: all 0.15s; font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--gradient); color: white; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
+  .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+  .btn-danger:hover { background: rgba(239,68,68,0.18); }
+  .btn-success { background: rgba(34,197,94,0.12); color: var(--success); border: 1px solid rgba(34,197,94,0.25); }
+  .btn-success:hover { background: rgba(34,197,94,0.2); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  .content { padding: 32px 36px; flex: 1; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== STATS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: background 0.2s; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 10px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; }
+  .stat-card:nth-child(1) .stat-value { color: var(--accent); }
+  .stat-card:nth-child(2) .stat-value { color: var(--accent2); }
+  .stat-card:nth-child(3) .stat-value { color: var(--warning); }
+  .stat-card:nth-child(4) .stat-value { color: var(--success); }
+
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: background 0.2s; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-dim); }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+  .empty-title { font-size: 14px; margin-bottom: 6px; color: var(--text-muted); }
+  .empty-desc { font-size: 12px; line-height: 1.5; }
+
+  /* ===== PRODUTOS ===== */
+  .produtos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+  .produto-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; transition: border-color 0.2s, background 0.2s; cursor: pointer; }
+  .produto-card:hover { border-color: var(--accent); }
+  .produto-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .produto-nome { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .produto-categoria { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 500; }
+  .produto-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .narrativas-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+
+  .tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+  .tag-narrativa { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+  .tag-plataforma { background: rgba(200,75,143,0.12); color: #f472b6; border: 1px solid rgba(200,75,143,0.2); }
+  .tag-publico { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.18); }
+
+  .produto-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+  .produto-meta { font-size: 11px; color: var(--text-dim); }
+  .produto-actions { display: flex; gap: 6px; }
+
+  /* ===== ROTEIROS ===== */
+  .roteiros-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+
+  .roteiro-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 12px;
+  }
+  .roteiro-card:hover { border-color: var(--accent2); }
+
+  .roteiro-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .roteiro-titulo { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .roteiro-produto { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .roteiro-gancho { font-size: 13px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .roteiro-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 10px; }
+  .roteiro-meta { display: flex; gap: 10px; align-items: center; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+  .badge-plataforma { background: rgba(200,75,143,0.12); color: #f472b6; border: 1px solid rgba(200,75,143,0.2); }
+  .badge-formato { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
+  .badge-duracao { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* ===== MODAL ROTEIRO GERADOR ===== */
+  .roteiro-steps { display: flex; gap: 0; margin-bottom: 24px; }
+  .roteiro-step {
+    flex: 1; text-align: center; padding: 10px 8px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-dim); border-bottom: 2px solid var(--border);
+    transition: all 0.2s;
+  }
+  .roteiro-step.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .roteiro-step.done { color: var(--success); border-bottom-color: var(--success); }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .produto-select-card {
+    border: 2px solid var(--border); border-radius: 12px; padding: 16px;
+    cursor: pointer; transition: all 0.15s; margin-bottom: 10px;
+    background: var(--surface2);
+  }
+  .produto-select-card:hover { border-color: var(--accent); }
+  .produto-select-card.selected { border-color: var(--accent); background: var(--accent-glow); }
+  .produto-select-card .psc-nome { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .produto-select-card .psc-desc { font-size: 12px; color: var(--text-muted); }
+
+  /* Roteiro visualização completa */
+  .roteiro-view { background: var(--surface2); border-radius: 12px; padding: 20px; }
+
+  .rv-section { margin-bottom: 20px; }
+  .rv-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 7px; font-weight: 600; }
+
+  .rv-gancho {
+    font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+    background: var(--gradient); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.4;
+  }
+
+  .rv-block {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-size: 13px; line-height: 1.6; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .rv-block strong { color: var(--text); }
+
+  .rv-tela-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px; background: var(--surface); border-radius: 7px;
+    border: 1px solid var(--border); margin-bottom: 6px; font-size: 12.5px;
+  }
+  .rv-tela-time { font-weight: 700; color: var(--accent); min-width: 40px; font-size: 11px; }
+  .rv-tela-text { color: var(--text-muted); line-height: 1.4; }
+
+  .rv-musica {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .rv-musica-icon { font-size: 20px; }
+  .rv-musica-info { flex: 1; }
+  .rv-musica-nome { font-size: 13px; font-weight: 600; }
+  .rv-musica-motivo { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .rv-cta {
+    background: var(--accent-glow); border: 1px solid rgba(200,75,143,0.3);
+    border-radius: 8px; padding: 14px; font-size: 13px; color: var(--text);
+    line-height: 1.6;
+  }
+
+  .rv-meta-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .rv-meta-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .rv-meta-value { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .rv-meta-key { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.2s ease; transition: background 0.2s; }
+
+  .modal-lg { max-width: 800px; }
+
+  @keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .modal-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 1; transition: background 0.2s; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .modal-close { width: 32px; height: 32px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px 28px; }
+  .modal-footer { padding: 16px 28px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ===== FORM ===== */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .form-input, .form-select, .form-textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; font-size: 13.5px; color: var(--text); font-family: 'Inter', sans-serif; transition: border-color 0.15s, background 0.2s; outline: none; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .form-select option { background: var(--surface2); color: var(--text); }
+  .form-hint { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 16px; }
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .section-divider-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); white-space: nowrap; }
+
+  /* ===== IA BOX ===== */
+  .ia-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .ia-box-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ia-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .ia-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; }
+  .ia-content { font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+  .ia-content strong { color: var(--text); }
+
+  .narrativas-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .narrativa-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: flex-start; gap: 10px; }
+  .narrativa-item:hover { border-color: var(--accent2); color: var(--text); }
+  .narrativa-item.selected { background: rgba(124,58,237,0.1); border-color: var(--accent2); color: var(--text); }
+  .narrativa-num { font-size: 11px; color: var(--accent2); font-weight: 700; min-width: 20px; padding-top: 1px; }
+  .narrativa-text { flex: 1; line-height: 1.5; }
+
+  .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .ganchos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .gancho-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+  .publico-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.18); border-radius: 20px; font-size: 12px; color: #4ade80; margin: 3px; }
+
+  .detail-section { margin-bottom: 22px; }
+  .detail-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 10px; }
+
+  /* ===== CHIPS ===== */
+  .chips-select { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip { padding: 6px 13px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); color: var(--text-muted); background: var(--surface2); transition: all 0.15s; user-select: none; }
+  .chip:hover { border-color: var(--text-dim); color: var(--text); }
+  .chip.selected { background: rgba(200,75,143,0.15); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  /* ===== TOAST ===== */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--success); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text); max-width: 300px; animation: toastIn 0.25s ease; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow); }
+  .toast.error { border-left-color: #ef4444; }
+  .toast.warning { border-left-color: var(--warning); }
+  @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+  .etapa-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(200,75,143,0.1); border: 1px solid rgba(200,75,143,0.25); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Studio ✦</div>
+    <div class="logo-sub">Creator Dashboard</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Principal</div>
+    <button class="nav-item active" onclick="navigate('home')">
+      <span class="icon">🏠</span> Início
+    </button>
+    <button class="nav-item" onclick="navigate('produtos')">
+      <span class="icon">📦</span> Produtos
+      <span class="nav-badge" id="badge-produtos">0</span>
+    </button>
+    <button class="nav-item" onclick="navigate('roteiros')">
+      <span class="icon">🎬</span> Roteiros
+      <span class="nav-badge" id="badge-roteiros">0</span>
+    </button>
+    <div class="nav-section-label" style="margin-top:8px">Em breve</div>
+    <button class="nav-item" style="opacity:0.45;cursor:not-allowed">
+      <span class="icon">📅</span> Cronograma
+    </button>
+    <button class="nav-item" style="opacity:0.45;cursor:not-allowed">
+      <span class="icon">⏰</span> Minha Agenda
+    </button>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="theme-toggle" onclick="toggleTheme()" id="btn-theme">
+      <span id="theme-icon">☀️</span>
+      <span id="theme-label">Modo claro</span>
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="topbar-title">Início</div>
+    <div class="topbar-actions" id="topbar-actions">
+      <button class="btn btn-primary" onclick="abrirModalProduto()">＋ Novo Produto</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="etapa-badge">✦ Etapas 1 & 2 — Produtos + Roteiros</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Produtos cadastrados</div><div class="stat-value" id="stat-produtos">0</div></div>
+        <div class="stat-card"><div class="stat-label">Roteiros gerados</div><div class="stat-value" id="stat-roteiros">0</div></div>
+        <div class="stat-card"><div class="stat-label">Vídeos esta semana</div><div class="stat-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">Postagens agendadas</div><div class="stat-value">—</div></div>
+      </div>
+      <div class="home-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎯 Por onde começar</div></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+              <div style="width:32px;height:32px;background:var(--gradient);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:white;font-weight:700">1</div>
+              <div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Cadastre seus produtos</div><div style="font-size:12px;color:var(--text-dim)">Adicione o produto e a IA gera narrativas</div></div>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto;white-space:nowrap" onclick="navigate('produtos')">Ir →</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+              <div style="width:32px;height:32px;background:var(--gradient);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:white;font-weight:700">2</div>
+              <div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Gere roteiros individuais</div><div style="font-size:12px;color:var(--text-dim)">Escolha produto + narrativa e a IA monta tudo</div></div>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto;white-space:nowrap" onclick="navigate('roteiros')">Ir →</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);opacity:0.5">
+              <div style="width:32px;height:32px;background:var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:700">3</div>
+              <div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Cronograma semanal</div><div style="font-size:12px;color:var(--text-dim)">Roteiros + dias + horários — Em breve</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎬 Roteiros recentes</div><button class="btn btn-ghost btn-sm" onclick="navigate('roteiros')">Ver todos</button></div>
+          <div id="home-roteiros-list"><div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">Nenhum roteiro ainda</div><div class="empty-desc">Vá em Roteiros e gere seu primeiro roteiro com IA.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="page" id="page-produtos">
+      <div class="produtos-header">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Seus Produtos</div>
+          <div style="font-size:13px;color:var(--text-muted)">Cadastre e a IA gera narrativas, ganchos e público-alvo automaticamente</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalProduto()">＋ Novo Produto</button>
+      </div>
+      <div id="produtos-grid" class="produtos-grid"></div>
+    </div>
+
+    <!-- ROTEIROS -->
+    <div class="page" id="page-roteiros">
+      <div class="roteiros-header">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Roteiros</div>
+          <div style="font-size:13px;color:var(--text-muted)">Selecione um produto + narrativa e a IA monta o roteiro completo</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalGerarRoteiro()">✦ Gerar Roteiro</button>
+      </div>
+      <div id="roteiros-lista"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =================== MODAL CADASTRO PRODUTO =================== -->
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-produto-titulo">Novo Produto</div>
+      <button class="modal-close" onclick="fecharModal('modal-produto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-label">Nome do produto *</label>
+          <input class="form-input" id="input-nome" placeholder="Ex: Máscara Capilar Reparadora 300g" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoria</label>
+          <select class="form-select" id="input-categoria">
+            <option value="">Selecionar...</option>
+            <option>Beleza & Cuidados</option><option>Saúde & Bem-estar</option>
+            <option>Moda & Acessórios</option><option>Casa & Decoração</option>
+            <option>Fitness & Esporte</option><option>Alimentação</option>
+            <option>Tecnologia</option><option>Pet</option><option>Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preço de venda</label>
+          <input class="form-input" id="input-preco" placeholder="R$ 0,00" />
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Descrição do produto *</label>
+          <textarea class="form-textarea" id="input-descricao" rows="3" placeholder="Descreva o produto: o que é, o que faz, benefício principal, diferenciais..."></textarea>
+          <span class="form-hint">Quanto mais detalhes, melhores serão os roteiros gerados.</span>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Link do produto</label>
+          <input class="form-input" id="input-link" placeholder="https://..." />
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Plataformas de venda</label>
+          <div class="chips-select" id="chips-plataformas">
+            <div class="chip selected" data-v="TikTok Shop">TikTok Shop</div>
+            <div class="chip" data-v="Instagram Reels">Instagram Reels</div>
+            <div class="chip" data-v="YouTube Shorts">YouTube Shorts</div>
+            <div class="chip" data-v="Shopee">Shopee</div>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Você tem o produto em mãos?</label>
+          <div class="chips-select" id="chips-tem-produto">
+            <div class="chip selected" data-v="sim">✅ Sim</div>
+            <div class="chip" data-v="nao">📦 Não</div>
+            <div class="chip" data-v="parcial">🔄 Às vezes</div>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Observações adicionais (opcional)</label>
+          <textarea class="form-textarea" id="input-obs" rows="2" placeholder="Ex: produto chegou mês passado, já testei, funciona bem para cabelos cacheados..."></textarea>
+        </div>
+      </div>
+
+      <div id="ia-analysis-box" style="display:none">
+        <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">✦ Análise da IA</div><div class="section-divider-line"></div></div>
+        <div class="ia-box">
+          <div class="ia-box-header"><div class="ia-dot" id="ia-dot-produto"></div><div class="ia-label" id="ia-label-produto">Analisando...</div></div>
+          <div class="ia-content" id="ia-content-text"><span class="loading-spinner"></span> Analisando produto...</div>
+        </div>
+        <div id="narrativas-container" style="display:none;margin-top:16px">
+          <div style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Narrativas sugeridas — selecione as que combinam com você</div>
+          <div class="narrativas-list" id="narrativas-list"></div>
+        </div>
+        <div id="ganchos-container" style="display:none;margin-top:16px">
+          <div style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ganchos de abertura</div>
+          <div class="ganchos-grid" id="ganchos-list"></div>
+        </div>
+        <div id="publico-container" style="display:none;margin-top:16px">
+          <div style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Público-alvo identificado</div>
+          <div id="publico-chips" style="display:flex;flex-wrap:wrap;margin:-3px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-produto')">Cancelar</button>
+      <button class="btn btn-ghost" id="btn-analisar" onclick="analisarProduto()">✦ Analisar com IA</button>
+      <button class="btn btn-primary" onclick="salvarProduto()">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== MODAL DETALHE PRODUTO =================== -->
+<div class="modal-overlay" id="modal-detalhe">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="detalhe-nome">Produto</div>
+        <div id="detalhe-categoria" style="font-size:12px;color:var(--accent);margin-top:3px"></div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-detalhe')">✕</button>
+    </div>
+    <div class="modal-body" id="detalhe-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="btn-deletar-detalhe">🗑 Excluir</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-detalhe')">Fechar</button>
+      <button class="btn btn-primary" id="btn-editar-detalhe">✏️ Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== MODAL GERAR ROTEIRO =================== -->
+<div class="modal-overlay" id="modal-gerar-roteiro">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">✦ Gerar Roteiro</div>
+      <button class="modal-close" onclick="fecharModal('modal-gerar-roteiro')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- STEPS -->
+      <div class="roteiro-steps">
+        <div class="roteiro-step active" id="rstep-1">1 · Produto</div>
+        <div class="roteiro-step" id="rstep-2">2 · Formato</div>
+        <div class="roteiro-step" id="rstep-3">3 · Roteiro</div>
+      </div>
+
+      <!-- STEP 1: PRODUTO -->
+      <div class="step-panel active" id="rpanel-1">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Qual produto você quer roteirizar?</div>
+        <div id="roteiro-produto-lista"></div>
+        <div style="margin-top:16px">
+          <div style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Narrativa (opcional — deixe em branco para a IA escolher)</div>
+          <div id="roteiro-narrativa-lista" style="display:flex;flex-direction:column;gap:7px"></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: FORMATO -->
+      <div class="step-panel" id="rpanel-2">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Plataforma</label>
+            <div class="chips-select" id="r-chips-plataforma">
+              <div class="chip selected" data-v="TikTok Shop">TikTok Shop</div>
+              <div class="chip" data-v="Instagram Reels">Instagram Reels</div>
+              <div class="chip" data-v="YouTube Shorts">YouTube Shorts</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duração do vídeo</label>
+            <div class="chips-select" id="r-chips-duracao">
+              <div class="chip" data-v="15s">15 seg</div>
+              <div class="chip selected" data-v="30s">30 seg</div>
+              <div class="chip" data-v="60s">60 seg</div>
+              <div class="chip" data-v="90s">90 seg</div>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Aparição em câmera</label>
+            <div class="chips-select" id="r-chips-camera">
+              <div class="chip selected" data-v="voz-rosto">🎥 Minha voz + rosto</div>
+              <div class="chip" data-v="voz-sem-rosto">🎙 Voz + mãos (sem rosto)</div>
+              <div class="chip" data-v="so-produto">📦 Só o produto</div>
+              <div class="chip" data-v="narração">🎤 Narração (sem aparecer)</div>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Tom do vídeo</label>
+            <div class="chips-select" id="r-chips-tom">
+              <div class="chip selected" data-v="autêntico">💬 Autêntico / natural</div>
+              <div class="chip" data-v="empolgante">🔥 Empolgante</div>
+              <div class="chip" data-v="educativo">📚 Educativo</div>
+              <div class="chip" data-v="engraçado">😂 Engraçado / descontraído</div>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Observação extra para este vídeo (opcional)</label>
+            <input class="form-input" id="r-obs-extra" placeholder="Ex: quero mencionar promoção de lançamento, comparar com concorrente..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: ROTEIRO GERADO -->
+      <div class="step-panel" id="rpanel-3">
+        <div id="roteiro-loading" style="text-align:center;padding:40px">
+          <div class="loading-spinner" style="width:24px;height:24px;border-width:3px;display:inline-block"></div>
+          <div style="margin-top:16px;color:var(--text-muted);font-size:14px">A IA está escrevendo seu roteiro...</div>
+          <div style="margin-top:6px;color:var(--text-dim);font-size:12px">Isso leva alguns segundos ☕</div>
+        </div>
+        <div id="roteiro-resultado" style="display:none"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer" id="modal-roteiro-footer">
+      <button class="btn btn-ghost" id="btn-roteiro-voltar" onclick="roteiroVoltar()" style="display:none">← Voltar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-gerar-roteiro')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-roteiro-avancar" onclick="roteiroAvancar()">Próximo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER ROTEIRO -->
+<div class="modal-overlay" id="modal-ver-roteiro">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="ver-roteiro-titulo">Roteiro</div>
+        <div id="ver-roteiro-meta" style="font-size:12px;color:var(--text-muted);margin-top:3px"></div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-ver-roteiro')">✕</button>
+    </div>
+    <div class="modal-body" id="ver-roteiro-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="btn-deletar-roteiro">🗑 Excluir</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-ver-roteiro')">Fechar</button>
+      <button class="btn btn-success btn-sm" onclick="copiarRoteiro()">📋 Copiar roteiro</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ============ STATE ============
+let produtos = JSON.parse(localStorage.getItem('studio_produtos') || '[]');
+let roteiros = JSON.parse(localStorage.getItem('studio_roteiros') || '[]');
+let editandoId = null;
+let narrativasSelecionadas = [];
+let iaData = null;
+
+// roteiro wizard
+let roteiroStep = 1;
+let roteiroState = { produtoId: null, narrativa: null };
+let roteiroGeradoAtual = null;
+let verRoteiroId = null;
+
+// ============ THEME ============
+function initTheme() {
+  const saved = localStorage.getItem('studio_theme') || 'dark';
+  setTheme(saved);
+}
+
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('studio_theme', t);
+  document.getElementById('theme-icon').textContent = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('theme-label').textContent = t === 'dark' ? 'Modo claro' : 'Modo escuro';
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// ============ NAVEGAÇÃO ============
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navMap = { home: 0, produtos: 1, roteiros: 2 };
+  document.querySelectorAll('.nav-item')[navMap[page]]?.classList.add('active');
+  const titles = { home: 'Início', produtos: 'Produtos', roteiros: 'Roteiros' };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  const actionsMap = {
+    home: '<button class="btn btn-primary" onclick="abrirModalProduto()">＋ Novo Produto</button>',
+    produtos: '<button class="btn btn-primary" onclick="abrirModalProduto()">＋ Novo Produto</button>',
+    roteiros: '<button class="btn btn-primary" onclick="abrirModalGerarRoteiro()">✦ Gerar Roteiro</button>'
+  };
+  document.getElementById('topbar-actions').innerHTML = actionsMap[page] || '';
+  renderAll();
+}
+
+// ============ RENDER ============
+function renderAll() {
+  document.getElementById('badge-produtos').textContent = produtos.length;
+  document.getElementById('badge-roteiros').textContent = roteiros.length;
+  document.getElementById('stat-produtos').textContent = produtos.length;
+  document.getElementById('stat-roteiros').textContent = roteiros.length;
+  renderProdutosGrid();
+  renderRoteirosLista();
+  renderHomeRoteiros();
+}
+
+function renderProdutosGrid() {
+  const grid = document.getElementById('produtos-grid');
+  if (produtos.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1" class="card"><div class="empty-state"><div class="empty-icon">✨</div><div class="empty-title">Nenhum produto cadastrado</div><div class="empty-desc">A IA vai analisar seu produto e sugerir narrativas, ganchos e público-alvo automaticamente.</div><br><button class="btn btn-primary" onclick="abrirModalProduto()">＋ Cadastrar primeiro produto</button></div></div>`;
+    return;
+  }
+  grid.innerHTML = produtos.map(p => cardProduto(p)).join('');
+  grid.querySelectorAll('.produto-card').forEach(card => {
+    card.addEventListener('click', () => abrirDetalhe(card.dataset.id));
+  });
+}
+
+function cardProduto(p) {
+  const narrativas = (p.narrativasSelecionadas || []).slice(0, 3);
+  const plataformas = (p.plataformas || []);
+  return `<div class="produto-card" data-id="${p.id}">
+    <div class="produto-top">
+      <div><div class="produto-nome">${esc(p.nome)}</div><div class="produto-categoria">${esc(p.categoria||'Sem categoria')}</div></div>
+      <div style="font-size:11px;color:var(--text-dim);text-align:right">
+        ${p.preco ? `<div style="font-size:14px;font-weight:700;color:var(--success)">${esc(p.preco)}</div>` : ''}
+        <div style="margin-top:2px">${temLabel(p.temProduto)}</div>
+      </div>
+    </div>
+    <div class="produto-desc">${esc(p.descricao)}</div>
+    <div class="narrativas-preview">
+      ${plataformas.map(pl => `<span class="tag tag-plataforma">${esc(pl)}</span>`).join('')}
+      ${narrativas.map(n => `<span class="tag tag-narrativa">${esc(truncar(n.titulo||n,28))}</span>`).join('')}
+    </div>
+    <div class="produto-footer">
+      <div class="produto-meta">📅 ${formatDate(p.criadoEm)}</div>
+      <div class="produto-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-sm" onclick="editarProduto('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deletarProduto('${p.id}')">🗑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRoteirosLista() {
+  const el = document.getElementById('roteiros-lista');
+  if (roteiros.length === 0) {
+    el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">Nenhum roteiro gerado ainda</div><div class="empty-desc">Clique em "Gerar Roteiro", escolha um produto e a IA escreve tudo: gancho, desenvolvimento, texto na tela, música e CTA.</div><br><button class="btn btn-primary" onclick="abrirModalGerarRoteiro()">✦ Gerar primeiro roteiro</button></div></div>`;
+    return;
+  }
+  el.innerHTML = roteiros.map(r => cardRoteiro(r)).join('');
+  el.querySelectorAll('.roteiro-card').forEach(card => {
+    card.addEventListener('click', () => abrirVerRoteiro(card.dataset.id));
+  });
+}
+
+function cardRoteiro(r) {
+  return `<div class="roteiro-card" data-id="${r.id}">
+    <div class="roteiro-top">
+      <div>
+        <div class="roteiro-titulo">${esc(r.titulo || 'Roteiro')}</div>
+        <div class="roteiro-produto">📦 ${esc(r.produtoNome || '—')}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end" onclick="event.stopPropagation()">
+        <button class="btn btn-danger btn-sm" onclick="deletarRoteiro('${r.id}')">🗑</button>
+      </div>
+    </div>
+    <div class="roteiro-gancho">${esc(r.gancho || '—')}</div>
+    <div class="roteiro-footer">
+      <div class="roteiro-meta">
+        <span class="badge badge-plataforma">${esc(r.plataforma||'—')}</span>
+        <span class="badge badge-formato">${esc(r.camera||'—')}</span>
+        <span class="badge badge-duracao">⏱ ${esc(r.duracao||'—')}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim)">${formatDate(r.criadoEm)}</div>
+    </div>
+  </div>`;
+}
+
+function renderHomeRoteiros() {
+  const el = document.getElementById('home-roteiros-list');
+  if (roteiros.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">Nenhum roteiro ainda</div><div class="empty-desc">Vá em Roteiros e gere seu primeiro roteiro.</div></div>`;
+    return;
+  }
+  el.innerHTML = roteiros.slice(0,4).map(r => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="navigate('roteiros')">
+      <div style="width:36px;height:36px;background:var(--gradient);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎬</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.titulo||'Roteiro')}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${esc(r.produtoNome||'—')} · ${esc(r.plataforma||'—')}</div>
+      </div>
+      <span class="badge badge-duracao">⏱ ${esc(r.duracao||'—')}</span>
+    </div>
+  `).join('');
+}
+
+// ============ MODAL PRODUTO ============
+function abrirModalProduto() {
+  editandoId = null; iaData = null; narrativasSelecionadas = [];
+  document.getElementById('modal-produto-titulo').textContent = 'Novo Produto';
+  ['input-nome','input-categoria','input-preco','input-descricao','input-link','input-obs'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('ia-analysis-box').style.display = 'none';
+  ['narrativas-container','ganchos-container','publico-container'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('btn-analisar').innerHTML = '✦ Analisar com IA';
+  document.getElementById('btn-analisar').disabled = false;
+  resetChips('chips-plataformas', ['TikTok Shop']);
+  resetChips('chips-tem-produto', ['sim']);
+  document.getElementById('modal-produto').classList.add('open');
+}
+
+function editarProduto(id) {
+  const p = produtos.find(x => x.id === id);
+  if (!p) return;
+  editandoId = id; iaData = p.iaData||null; narrativasSelecionadas = p.narrativasSelecionadas||[];
+  document.getElementById('modal-produto-titulo').textContent = 'Editar Produto';
+  document.getElementById('input-nome').value = p.nome||'';
+  document.getElementById('input-categoria').value = p.categoria||'';
+  document.getElementById('input-preco').value = p.preco||'';
+  document.getElementById('input-descricao').value = p.descricao||'';
+  document.getElementById('input-link').value = p.link||'';
+  document.getElementById('input-obs').value = p.obs||'';
+  resetChips('chips-plataformas', p.plataformas||['TikTok Shop']);
+  resetChips('chips-tem-produto', [p.temProduto||'sim']);
+  if (iaData) {
+    document.getElementById('ia-analysis-box').style.display = 'block';
+    renderIaData(iaData);
+  }
+  fecharModal('modal-detalhe');
+  document.getElementById('modal-produto').classList.add('open');
+}
+
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ============ CHIPS ============
+document.querySelectorAll('.chips-select').forEach(cs => {
+  cs.addEventListener('click', e => {
+    const chip = e.target.closest('.chip'); if (!chip) return;
+    const multi = ['chips-plataformas','r-chips-plataforma'].includes(cs.id);
+    if (multi) chip.classList.toggle('selected');
+    else { cs.querySelectorAll('.chip').forEach(c => c.classList.remove('selected')); chip.classList.add('selected'); }
+  });
+});
+
+function resetChips(id, vals) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  c.querySelectorAll('.chip').forEach(chip => chip.classList.toggle('selected', vals.includes(chip.dataset.v)));
+}
+
+function getChips(id) {
+  return Array.from(document.getElementById(id)?.querySelectorAll('.chip.selected')||[]).map(c=>c.dataset.v);
+}
+
+// ============ IA PRODUTO ============
+async function analisarProduto() {
+  const nome = document.getElementById('input-nome').value.trim();
+  const descricao = document.getElementById('input-descricao').value.trim();
+  if (!nome || !descricao) { toast('Preencha nome e descrição primeiro.','warning'); return; }
+  const btn = document.getElementById('btn-analisar');
+  btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Analisando...';
+  document.getElementById('ia-analysis-box').style.display = 'block';
+  ['narrativas-container','ganchos-container','publico-container'].forEach(id => document.getElementById(id).style.display='none');
+  document.getElementById('ia-content-text').innerHTML = '<span class="loading-spinner"></span> Analisando produto...';
+  document.getElementById('ia-label-produto').textContent = 'Analisando...';
+  document.getElementById('ia-dot-produto').style.animation = 'pulse 1.5s infinite';
+  document.getElementById('ia-dot-produto').style.background = 'var(--accent)';
+
+  const prompt = `Você é especialista em marketing de conteúdo para TikTok Shop e Instagram Reels no Brasil.
+Analise este produto e gere análise completa para criadora de conteúdo:
+PRODUTO: ${nome}
+CATEGORIA: ${document.getElementById('input-categoria').value||'Não especificada'}
+DESCRIÇÃO: ${descricao}
+PLATAFORMAS: ${getChips('chips-plataformas').join(', ')||'TikTok Shop'}
+TEM PRODUTO: ${getChips('chips-tem-produto')[0]==='sim'?'Sim':getChips('chips-tem-produto')[0]==='nao'?'Não':'Às vezes'}
+${document.getElementById('input-obs').value.trim()?'OBS: '+document.getElementById('input-obs').value.trim():''}
+
+Responda APENAS JSON válido sem markdown:
+{"resumo":"potencial em 1 frase","publicoAlvo":["perfil1","perfil2","perfil3","perfil4"],"narrativas":[{"titulo":"nome curto","descricao":"como usar","angulo":"tipo"},{"titulo":"","descricao":"","angulo":""},{"titulo":"","descricao":"","angulo":""},{"titulo":"","descricao":"","angulo":""},{"titulo":"","descricao":"","angulo":""}],"ganchos":["gancho1","gancho2","gancho3","gancho4"],"objecoes":["obj1","obj2","obj3"]}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const raw = (data.content||[]).map(b=>b.text||'').join('');
+    iaData = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    renderIaData(iaData);
+    toast('✨ Análise concluída!');
+  } catch(e) {
+    document.getElementById('ia-content-text').innerHTML = '⚠️ Erro ao conectar. Tente novamente.';
+    console.error(e);
+  }
+  btn.disabled = false; btn.innerHTML = '✦ Reanalisar';
+}
+
+function renderIaData(data) {
+  document.getElementById('ia-content-text').innerHTML = `<strong>Potencial:</strong> ${data.resumo||'—'}`;
+  document.getElementById('ia-label-produto').textContent = 'Análise Concluída';
+  document.getElementById('ia-dot-produto').style.animation = 'none';
+  document.getElementById('ia-dot-produto').style.background = 'var(--success)';
+  const nl = document.getElementById('narrativas-list');
+  nl.innerHTML = (data.narrativas||[]).map((n,i)=>{
+    const titulo = typeof n==='string'?n:n.titulo;
+    const desc = typeof n==='string'?'':n.descricao;
+    const angulo = typeof n==='string'?'':n.angulo;
+    const sel = narrativasSelecionadas.some(x=>(x.titulo||x)===titulo);
+    return `<div class="narrativa-item ${sel?'selected':''}" onclick="toggleNarrativa(this,${i})" data-titulo="${esc(titulo)}">
+      <div class="narrativa-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="narrativa-text"><strong>${esc(titulo)}</strong>
+        ${desc?`<div style="font-size:12px;color:var(--text-dim);margin-top:3px">${esc(desc)}</div>`:''}
+        ${angulo?`<span style="font-size:10px;background:rgba(124,58,237,0.15);color:#a78bfa;padding:2px 7px;border-radius:10px;margin-top:5px;display:inline-block">${esc(angulo)}</span>`:''}
+      </div></div>`;
+  }).join('');
+  document.getElementById('narrativas-container').style.display='block';
+  document.getElementById('ganchos-list').innerHTML = (data.ganchos||[]).map(g=>`<div class="gancho-item">💬 "${esc(g)}"</div>`).join('');
+  document.getElementById('ganchos-container').style.display='block';
+  document.getElementById('publico-chips').innerHTML = (data.publicoAlvo||[]).map(p=>`<span class="publico-chip">👤 ${esc(p)}</span>`).join('');
+  document.getElementById('publico-container').style.display='block';
+}
+
+function toggleNarrativa(el, idx) {
+  el.classList.toggle('selected');
+  if (!iaData) return;
+  const n = iaData.narrativas[idx];
+  const titulo = typeof n==='string'?n:n.titulo;
+  if (el.classList.contains('selected')) { if(!narrativasSelecionadas.some(x=>(x.titulo||x)===titulo)) narrativasSelecionadas.push(n); }
+  else narrativasSelecionadas = narrativasSelecionadas.filter(x=>(x.titulo||x)!==titulo);
+}
+
+// ============ SALVAR PRODUTO ============
+function salvarProduto() {
+  const nome = document.getElementById('input-nome').value.trim();
+  const descricao = document.getElementById('input-descricao').value.trim();
+  if (!nome||!descricao) { toast('Nome e descrição são obrigatórios.','warning'); return; }
+  const produto = {
+    id: editandoId||Date.now().toString(), nome,
+    categoria: document.getElementById('input-categoria').value,
+    preco: document.getElementById('input-preco').value.trim(),
+    descricao, link: document.getElementById('input-link').value.trim(),
+    obs: document.getElementById('input-obs').value.trim(),
+    plataformas: getChips('chips-plataformas'),
+    temProduto: getChips('chips-tem-produto')[0]||'sim',
+    narrativasSelecionadas, iaData,
+    criadoEm: editandoId?(produtos.find(x=>x.id===editandoId)?.criadoEm||new Date().toISOString()):new Date().toISOString(),
+    atualizadoEm: new Date().toISOString()
+  };
+  if (editandoId) { produtos[produtos.findIndex(x=>x.id===editandoId)] = produto; toast('✅ Produto atualizado!'); }
+  else { produtos.unshift(produto); toast('✅ Produto cadastrado!'); }
+  salvarStorage(); fecharModal('modal-produto'); renderAll();
+}
+
+function deletarProduto(id) {
+  if (!confirm('Excluir este produto?')) return;
+  produtos = produtos.filter(p=>p.id!==id); salvarStorage(); renderAll(); toast('🗑 Produto excluído.');
+}
+
+// ============ DETALHE PRODUTO ============
+function abrirDetalhe(id) {
+  const p = produtos.find(x=>x.id===id); if(!p) return;
+  document.getElementById('detalhe-nome').textContent = p.nome;
+  document.getElementById('detalhe-categoria').textContent = p.categoria||'';
+  const body = document.getElementById('detalhe-body');
+  body.innerHTML = `
+    <div class="detail-section"><div class="detail-section-title">Descrição</div><div style="font-size:13.5px;line-height:1.7;color:var(--text-muted)">${esc(p.descricao)}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div><div class="detail-section-title">Plataformas</div><div style="display:flex;flex-wrap:wrap;gap:6px">${(p.plataformas||[]).map(pl=>`<span class="tag tag-plataforma">${esc(pl)}</span>`).join('')}</div></div>
+      <div><div class="detail-section-title">Tem produto</div><div style="font-size:13px;color:var(--text-muted)">${temLabel(p.temProduto)}</div></div>
+      ${p.preco?`<div><div class="detail-section-title">Preço</div><div style="font-size:16px;font-weight:700;color:var(--success)">${esc(p.preco)}</div></div>`:''}
+      ${p.link?`<div><div class="detail-section-title">Link</div><a href="${p.link}" target="_blank" style="font-size:12px;color:var(--accent);text-decoration:none">🔗 Abrir</a></div>`:''}
+    </div>
+    ${p.narrativasSelecionadas?.length?`<div class="detail-section"><div class="detail-section-title">Narrativas (${p.narrativasSelecionadas.length})</div><div class="narrativas-list">${p.narrativasSelecionadas.map((n,i)=>{const t=typeof n==='string'?n:n.titulo;const d=typeof n==='string'?'':n.descricao;return`<div class="narrativa-item selected"><div class="narrativa-num">${String(i+1).padStart(2,'0')}</div><div class="narrativa-text"><strong>${esc(t)}</strong>${d?`<div style="font-size:12px;color:var(--text-dim);margin-top:2px">${esc(d)}</div>`:''}</div></div>`}).join('')}</div></div>`:''}
+    ${p.iaData?.ganchos?.length?`<div class="detail-section"><div class="detail-section-title">Ganchos</div><div class="ganchos-grid">${p.iaData.ganchos.map(g=>`<div class="gancho-item">💬 "${esc(g)}"</div>`).join('')}</div></div>`:''}
+    ${p.iaData?.publicoAlvo?.length?`<div class="detail-section"><div class="detail-section-title">Público-alvo</div><div>${p.iaData.publicoAlvo.map(pa=>`<span class="publico-chip">👤 ${esc(pa)}</span>`).join('')}</div></div>`:''}
+    ${p.iaData?.objecoes?.length?`<div class="detail-section"><div class="detail-section-title">Objeções a contornar</div><div style="display:flex;flex-direction:column;gap:7px">${p.iaData.objecoes.map(o=>`<div style="font-size:13px;color:var(--text-muted);padding:8px 12px;background:var(--surface2);border-radius:7px;border-left:3px solid var(--warning)">⚠️ ${esc(o)}</div>`).join('')}</div></div>`:''}
+    <div style="font-size:11px;color:var(--text-dim);margin-top:16px">Cadastrado em ${formatDate(p.criadoEm)}</div>`;
+  document.getElementById('btn-deletar-detalhe').onclick = () => { fecharModal('modal-detalhe'); deletarProduto(id); };
+  document.getElementById('btn-editar-detalhe').onclick = () => editarProduto(id);
+  document.getElementById('modal-detalhe').classList.add('open');
+}
+
+// ============ GERAR ROTEIRO - WIZARD ============
+function abrirModalGerarRoteiro() {
+  if (produtos.length === 0) { toast('Cadastre pelo menos um produto primeiro.','warning'); navigate('produtos'); return; }
+  roteiroStep = 1; roteiroState = { produtoId: null, narrativa: null }; roteiroGeradoAtual = null;
+  resetRoteiroWizard();
+  document.getElementById('modal-gerar-roteiro').classList.add('open');
+}
+
+function resetRoteiroWizard() {
+  // steps UI
+  [1,2,3].forEach(i => {
+    document.getElementById(`rstep-${i}`).className = 'roteiro-step' + (i===1?' active':'');
+    document.getElementById(`rpanel-${i}`).className = 'step-panel' + (i===1?' active':'');
+  });
+  document.getElementById('btn-roteiro-voltar').style.display = 'none';
+  document.getElementById('btn-roteiro-avancar').textContent = 'Próximo →';
+  document.getElementById('btn-roteiro-avancar').style.display = '';
+  document.getElementById('roteiro-loading').style.display = 'block';
+  document.getElementById('roteiro-resultado').style.display = 'none';
+
+  // reset chips roteiro
+  resetChips('r-chips-plataforma',['TikTok Shop']);
+  resetChips('r-chips-duracao',['30s']);
+  resetChips('r-chips-camera',['voz-rosto']);
+  resetChips('r-chips-tom',['autêntico']);
+  const obsEl = document.getElementById('r-obs-extra'); if(obsEl) obsEl.value='';
+
+  // lista de produtos no wizard
+  const pl = document.getElementById('roteiro-produto-lista');
+  pl.innerHTML = produtos.map(p => `
+    <div class="produto-select-card" data-id="${p.id}" onclick="selecionarProdutoWizard('${p.id}')">
+      <div class="psc-nome">${esc(p.nome)}</div>
+      <div class="psc-desc">${esc(truncar(p.descricao,80))}</div>
+    </div>`).join('');
+}
+
+function selecionarProdutoWizard(id) {
+  roteiroState.produtoId = id; roteiroState.narrativa = null;
+  document.querySelectorAll('.produto-select-card').forEach(c => c.classList.toggle('selected', c.dataset.id===id));
+  const p = produtos.find(x=>x.id===id);
+  const nl = document.getElementById('roteiro-narrativa-lista');
+  if (p?.narrativasSelecionadas?.length) {
+    nl.innerHTML = [
+      `<div class="narrativa-item" onclick="selecionarNarrativaWizard(this, null)"><div class="narrativa-num">—</div><div class="narrativa-text"><strong>IA escolhe a melhor narrativa</strong></div></div>`,
+      ...p.narrativasSelecionadas.map((n,i) => {
+        const titulo = typeof n==='string'?n:n.titulo;
+        const desc = typeof n==='string'?'':n.descricao;
+        return `<div class="narrativa-item" onclick="selecionarNarrativaWizard(this, ${i})" data-idx="${i}">
+          <div class="narrativa-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="narrativa-text"><strong>${esc(titulo)}</strong>${desc?`<div style="font-size:12px;color:var(--text-dim)">${esc(desc)}</div>`:''}</div>
+        </div>`;
+      })
+    ].join('');
+  } else {
+    nl.innerHTML = `<div style="font-size:13px;color:var(--text-dim);padding:12px;background:var(--surface2);border-radius:8px;text-align:center">Este produto não tem narrativas cadastradas. A IA vai criar uma automaticamente.</div>`;
+  }
+}
+
+function selecionarNarrativaWizard(el, idx) {
+  document.querySelectorAll('#roteiro-narrativa-lista .narrativa-item').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  if (idx === null) { roteiroState.narrativa = null; return; }
+  const p = produtos.find(x=>x.id===roteiroState.produtoId);
+  roteiroState.narrativa = p?.narrativasSelecionadas?.[idx] || null;
+}
+
+function roteiroAvancar() {
+  if (roteiroStep === 1) {
+    if (!roteiroState.produtoId) { toast('Selecione um produto.','warning'); return; }
+    irParaStep(2);
+  } else if (roteiroStep === 2) {
+    irParaStep(3);
+    gerarRoteiroIA();
+  }
+}
+
+function roteiroVoltar() {
+  if (roteiroStep === 2) irParaStep(1);
+  else if (roteiroStep === 3) irParaStep(2);
+}
+
+function irParaStep(n) {
+  roteiroStep = n;
+  [1,2,3].forEach(i => {
+    const step = document.getElementById(`rstep-${i}`);
+    const panel = document.getElementById(`rpanel-${i}`);
+    step.className = 'roteiro-step' + (i<n?' done':i===n?' active':'');
+    panel.className = 'step-panel' + (i===n?' active':'');
+  });
+  document.getElementById('btn-roteiro-voltar').style.display = n>1?'':'none';
+  document.getElementById('btn-roteiro-avancar').style.display = n===3?'none':'';
+  if (n===2) document.getElementById('btn-roteiro-avancar').textContent = '✦ Gerar Roteiro';
+  if (n===1) document.getElementById('btn-roteiro-avancar').textContent = 'Próximo →';
+}
+
+async function gerarRoteiroIA() {
+  document.getElementById('roteiro-loading').style.display = 'block';
+  document.getElementById('roteiro-resultado').style.display = 'none';
+
+  const p = produtos.find(x=>x.id===roteiroState.produtoId);
+  const plataforma = getChips('r-chips-plataforma')[0]||'TikTok Shop';
+  const duracao = getChips('r-chips-duracao')[0]||'30s';
+  const camera = getChips('r-chips-camera')[0]||'voz-rosto';
+  const tom = getChips('r-chips-tom')[0]||'autêntico';
+  const obsExtra = document.getElementById('r-obs-extra')?.value.trim()||'';
+  const narrativa = roteiroState.narrativa;
+
+  const cameraMap = { 'voz-rosto':'aparece com rosto e voz','voz-sem-rosto':'aparece com mãos/produto mas sem rosto','so-produto':'só o produto aparece','narração':'narração em off, sem aparecer' };
+  const tomMap = { 'autêntico':'autêntico e natural como conversa entre amigas','empolgante':'empolgante e energético','educativo':'educativo e informativo','engraçado':'descontraído e divertido' };
+
+  const prompt = `Você é redatora especialista em roteiros virais para TikTok Shop e Instagram Reels no Brasil.
+
+Crie um roteiro completo para este vídeo:
+
+PRODUTO: ${p.nome}
+DESCRIÇÃO: ${p.descricao}
+PLATAFORMA: ${plataforma}
+DURAÇÃO: ${duracao}
+CÂMERA: ${cameraMap[camera]||camera}
+TOM: ${tomMap[tom]||tom}
+${narrativa ? `NARRATIVA: ${typeof narrativa==='string'?narrativa:(narrativa.titulo||'')+' — '+(narrativa.descricao||'')}` : ''}
+${p.iaData?.publicoAlvo?.length ? `PÚBLICO: ${p.iaData.publicoAlvo.join(', ')}` : ''}
+${obsExtra ? `EXTRA: ${obsExtra}` : ''}
+${p.temProduto!=='sim' ? 'ATENÇÃO: criadora NÃO tem o produto em mãos — adapte o roteiro.' : ''}
+
+Responda SOMENTE com JSON puro, sem texto antes ou depois, sem markdown, sem explicações. Use este formato exato:
+{"titulo":"titulo do roteiro","gancho":"frase de abertura impactante dos primeiros 3s","cenas":[{"tempo":"0s-5s","tipo":"gancho","fala":"texto exato da fala","tela":"texto na tela"},{"tempo":"5s-15s","tipo":"desenvolvimento","fala":"texto exato","tela":"texto na tela"},{"tempo":"15s-25s","tipo":"prova","fala":"texto exato","tela":"texto na tela"},{"tempo":"25s-30s","tipo":"cta","fala":"texto exato","tela":"texto na tela"}],"musica":{"nome":"nome ou estilo","motivo":"por que combina","bpm":"lento"},"cta":"call to action completo","dicas":["dica1","dica2","dica3"],"hashtags":["#tag1","#tag2","#tag3","#tag4","#tag5"]}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message||'API error');
+    const raw = (data.content||[]).map(b=>b.text||'').join('').trim();
+    // extrai JSON mesmo se vier com texto extra
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Resposta não contém JSON: ' + raw.slice(0,200));
+    const roteiro = JSON.parse(jsonMatch[0]);
+    // normaliza cenas -> desenvolvimento para compatibilidade
+    if (roteiro.cenas && !roteiro.desenvolvimento) {
+      roteiro.desenvolvimento = roteiro.cenas.map(c => ({tempo:c.tempo,tipo:c.tipo,texto:c.fala,textotela:c.tela}));
+    }
+
+    roteiroGeradoAtual = {
+      id: Date.now().toString(),
+      produtoId: p.id, produtoNome: p.nome,
+      plataforma, duracao, camera, tom,
+      titulo: roteiro.titulo, gancho: roteiro.gancho,
+      dados: roteiro, criadoEm: new Date().toISOString()
+    };
+
+    document.getElementById('roteiro-loading').style.display = 'none';
+    document.getElementById('roteiro-resultado').style.display = 'block';
+    document.getElementById('roteiro-resultado').innerHTML = renderRoteiroView(roteiro, {plataforma, duracao, camera});
+
+    document.getElementById('btn-roteiro-avancar').style.display = '';
+    document.getElementById('btn-roteiro-avancar').textContent = '💾 Salvar Roteiro';
+    document.getElementById('btn-roteiro-avancar').onclick = salvarRoteiroGerado;
+
+  } catch(e) {
+    console.error('Erro roteiro:', e);
+    const errMsg = e.message || String(e);
+    document.getElementById('roteiro-loading').innerHTML = '<div style="text-align:center;padding:24px"><div style="color:#ef4444;font-size:14px;margin-bottom:8px">⚠️ Erro ao gerar roteiro</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px;word-break:break-all">' + errMsg + '</div><button class="btn btn-ghost btn-sm" onclick="gerarRoteiroIA()">↺ Tentar novamente</button></div>';
+  }
+}
+
+function renderRoteiroView(r, meta) {
+  const devRows = (r.desenvolvimento||[]).map(d => `
+    <div class="rv-block">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:10px;background:rgba(200,75,143,0.12);color:var(--accent);padding:2px 8px;border-radius:10px;font-weight:600;text-transform:uppercase">${esc(d.tipo||'')}</span>
+        <span style="font-size:11px;color:var(--text-dim)">${esc(d.tempo||'')}</span>
+      </div>
+      <div style="margin-bottom:6px">🎙 <strong>Fala:</strong> "${esc(d.texto||'')}"</div>
+      ${d.textotela?`<div>📱 <strong>Na tela:</strong> "${esc(d.textotela)}"</div>`:''}
+    </div>`).join('');
+
+  const telasRows = (r.textosNaTela||[]).map(t => `
+    <div class="rv-tela-item">
+      <div class="rv-tela-time">${esc(t.segundo||'')}</div>
+      <div class="rv-tela-text">"${esc(t.texto||'')}" <span style="font-size:10px;color:var(--text-dim)">[${esc(t.estilo||'')}]</span></div>
+    </div>`).join('');
+
+  const hashtags = (r.hashtags||[]).map(h=>`<span class="tag tag-narrativa">${esc(h)}</span>`).join('');
+  const dicas = (r.dicas||[]).map(d=>`<div style="font-size:12.5px;color:var(--text-muted);padding:7px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--accent2)">💡 ${esc(d)}</div>`).join('');
+
+  return `<div class="roteiro-view">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+      <span class="badge badge-plataforma">${esc(meta.plataforma)}</span>
+      <span class="badge badge-formato">${esc(meta.camera)}</span>
+      <span class="badge badge-duracao">⏱ ${esc(meta.duracao)}</span>
+    </div>
+
+    <div class="rv-section"><div class="rv-label">Gancho de abertura</div><div class="rv-gancho">"${esc(r.gancho||'')}"</div></div>
+
+    <div class="rv-section"><div class="rv-label">Roteiro cena a cena</div>${devRows}</div>
+
+    ${telasRows?`<div class="rv-section"><div class="rv-label">Textos na tela</div>${telasRows}</div>`:''}
+
+    ${r.musica?`<div class="rv-section"><div class="rv-label">Trilha sonora</div>
+      <div class="rv-musica"><div class="rv-musica-icon">🎵</div><div class="rv-musica-info">
+        <div class="rv-musica-nome">${esc(r.musica.nome||'')}</div>
+        <div class="rv-musica-motivo">${esc(r.musica.motivo||'')} · BPM: ${esc(r.musica.bpm||'')}</div>
+      </div></div></div>`:''}
+
+    <div class="rv-section"><div class="rv-label">Call to Action</div><div class="rv-cta">📣 "${esc(r.cta||'')}"</div></div>
+
+    ${dicas?`<div class="rv-section"><div class="rv-label">Dicas de gravação</div><div style="display:flex;flex-direction:column;gap:6px">${dicas}</div></div>`:''}
+
+    ${hashtags?`<div class="rv-section"><div class="rv-label">Hashtags sugeridas</div><div style="display:flex;flex-wrap:wrap;gap:6px">${hashtags}</div></div>`:''}
+  </div>`;
+}
+
+function salvarRoteiroGerado() {
+  if (!roteiroGeradoAtual) return;
+  roteiros.unshift(roteiroGeradoAtual);
+  salvarStorage(); renderAll();
+  fecharModal('modal-gerar-roteiro');
+  toast('🎬 Roteiro salvo!');
+  navigate('roteiros');
+}
+
+// ============ VER ROTEIRO ============
+function abrirVerRoteiro(id) {
+  const r = roteiros.find(x=>x.id===id); if(!r) return;
+  verRoteiroId = id;
+  document.getElementById('ver-roteiro-titulo').textContent = r.titulo||'Roteiro';
+  document.getElementById('ver-roteiro-meta').textContent = `${r.produtoNome||''} · ${r.plataforma||''} · ${formatDate(r.criadoEm)}`;
+  document.getElementById('ver-roteiro-body').innerHTML = r.dados ? renderRoteiroView(r.dados, {plataforma:r.plataforma,duracao:r.duracao,camera:r.camera}) : '<div style="color:var(--text-muted)">Roteiro sem dados detalhados.</div>';
+  document.getElementById('btn-deletar-roteiro').onclick = () => { fecharModal('modal-ver-roteiro'); deletarRoteiro(id); };
+  document.getElementById('modal-ver-roteiro').classList.add('open');
+}
+
+function deletarRoteiro(id) {
+  if (!confirm('Excluir este roteiro?')) return;
+  roteiros = roteiros.filter(r=>r.id!==id); salvarStorage(); renderAll(); toast('🗑 Roteiro excluído.');
+}
+
+function copiarRoteiro() {
+  const r = roteiros.find(x=>x.id===verRoteiroId); if(!r||!r.dados) return;
+  const d = r.dados;
+  let txt = `ROTEIRO: ${r.titulo||''}\nPRODUTO: ${r.produtoNome||''}\nPLATAFORMA: ${r.plataforma||''} · ${r.duracao||''}\n\n`;
+  txt += `GANCHO:\n"${d.gancho||''}"\n\n`;
+  txt += `ROTEIRO CENA A CENA:\n`;
+  (d.desenvolvimento||[]).forEach(s => { txt += `[${s.tempo||''}] ${s.tipo?.toUpperCase()||''}\nFala: "${s.texto||''}"\n${s.textotela?`Tela: "${s.textotela}"\n`:''}\n`; });
+  if(d.musica) txt += `MÚSICA: ${d.musica.nome||''} (${d.musica.bpm||''})\n`;
+  txt += `\nCTA:\n"${d.cta||''}"\n\n`;
+  if(d.dicas?.length) txt += `DICAS:\n${d.dicas.map(x=>`• ${x}`).join('\n')}\n\n`;
+  if(d.hashtags?.length) txt += `HASHTAGS: ${d.hashtags.join(' ')}`;
+  navigator.clipboard.writeText(txt).then(()=>toast('📋 Roteiro copiado!')).catch(()=>toast('Erro ao copiar','error'));
+}
+
+// ============ UTILS ============
+function salvarStorage() {
+  localStorage.setItem('studio_produtos', JSON.stringify(produtos));
+  localStorage.setItem('studio_roteiros', JSON.stringify(roteiros));
+}
+function formatDate(iso) { try { return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}); } catch{return '—';} }
+function truncar(s,n) { return s&&s.length>n?s.slice(0,n)+'...':s; }
+function temLabel(v) { return {sim:'✅ Tem produto',nao:'📦 Sem produto',parcial:'🔄 Às vezes'}[v]||''; }
+function esc(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toast(msg, type='success') {
+  const tc = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>{{${type==='success'?'✅':type==='error'?'❌':'⚠️'}}}</span> ${msg}`.replace('{{','').replace('}}','');
+  tc.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// ============ INIT ============
+initTheme();
+renderAll();
+</script>
+</body>
+</html>
